@@ -1,18 +1,13 @@
 const express = require("express");
 const server = express();
 const configureMiddleware = require("../config/middlewareConfig");
+const cohortsRouter = require("../routes/cohortsRouter");
+const studentsRouter = require("../routes/studentsRouter");
 
 configureMiddleware(server);
 
 // routes
-// server.use("/cohorts");
-// server.use("/students");
+server.use("/cohorts", cohortsRouter);
+server.use("/students", studentsRouter);
 
-server.get("/", (req, res) => {
-  try {
-    res.send("sanity check");
-  } catch (err) {
-    res.json(err);
-  }
-});
 module.exports = server;
