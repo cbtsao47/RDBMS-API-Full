@@ -1,12 +1,14 @@
 const express = require("express");
 const route = express.Router();
-const errCodes = require("../common/errCodes");
+const statusCode = require("../common/errCodes");
+const studentsDb = require("../data/dbConfig");
 
-route.get("/", (req, res) => {
+route.get("/", async (req, res) => {
   try {
-    res.send("works");
+    const result = await studentsDb("students");
+    res.status(statusCode.ok).json(result);
   } catch (err) {
-    res.status(errCodes.internalErr).json({ err });
+    res.status(statusCode.internalErr).json({ err });
   }
 });
 
