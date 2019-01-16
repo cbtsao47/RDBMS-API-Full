@@ -24,7 +24,10 @@ route.get("/", async (req, res) => {
 route.get("/:id", async (req, res) => {
   const { id } = req.params;
   try {
-    const result = await db("students").where({ id });
+    const result = await db("students")
+      .join("cohorts", "students.cohort_id", "=", "cohorts.id")
+      .select("students.id", "students.name", { cohort: "cohorts.name" })
+      .where({ "students.id": id });
     if (result.length) {
       res.status(statusCode.ok).json(result[0]);
     } else {
