@@ -4,7 +4,7 @@ const statusCode = require("../common/errCodes");
 const nameCheck = require("../common/nameCheck");
 const db = require("../data/dbConfig");
 
-function failed(err, res) {
+function failed(res) {
   res
     .status(statusCode.internalErr)
     .json({ message: "There is something wrong with the server." });
@@ -27,8 +27,9 @@ route.get("/:id", async (req, res) => {
     const result = await db("students").where({ id });
     if (result.length) {
       res.status(statusCode.ok).json(result[0]);
+    } else {
+      res.status(statusCode.notFound).json({ message: "Not Found" });
     }
-    res.status(statusCode.notFound).json({ message: "Not Found" });
   } catch (err) {
     failed(res);
   }

@@ -4,7 +4,7 @@ const statusCode = require("../common/errCodes");
 const db = require("../data/dbConfig");
 const nameCheck = require("../common/nameCheck");
 
-function failed(err, res) {
+function failed(res) {
   res
     .status(statusCode.internalErr)
     .json({ message: "There is something wrong with the server." });
@@ -26,8 +26,9 @@ route.get("/:id/students", async (req, res) => {
     const result = await db("students").where({ cohort_id: id });
     if (result.length) {
       res.status(statusCode.ok).json(result);
+    } else {
+      res.status(statusCode.notFound).json({ message: "Not Found" });
     }
-    res.status(statusCode.notFound).json({ message: "Not Found" });
   } catch (err) {
     failed(res);
   }
@@ -38,8 +39,9 @@ route.get("/:id", async (req, res) => {
     const result = await db("cohorts").where({ id });
     if (result.length) {
       res.status(statusCode.ok).json(result[0]);
+    } else {
+      res.status(statusCode.notFound).json({ message: "Not Found" });
     }
-    res.status(statusCode.notFound).json({ message: "Not Found" });
   } catch (err) {
     failed(res);
   }
