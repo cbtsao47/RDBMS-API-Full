@@ -20,7 +20,18 @@ route.get("/", async (req, res) => {
       .json({ message: "There is something wrong with the server." });
   }
 });
-
+route.get("/:id/students", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await db("students").where({ cohort_id: id });
+    if (result.length) {
+      res.status(statusCode.ok).json(result);
+    }
+    res.status(statusCode.notFound).json({ message: "Not Found" });
+  } catch (err) {
+    failed(res);
+  }
+});
 route.get("/:id", async (req, res) => {
   const { id } = req.params;
   try {
