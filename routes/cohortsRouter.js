@@ -50,8 +50,15 @@ route.get("/:id", async (req, res) => {
 route.post("/", nameCheck, async (req, res) => {
   const info = req.body;
   try {
-    await db("cohorts").insert(info);
-    res.status(statusCode.created).json({ message: "Cohort created!" });
+    const found = await db("cohorts").where({ name: info.name });
+    if (!found.length) {
+      await db("cohorts").insert(info);
+      res.status(statusCode.created).json({ message: "Cohort created!" });
+    } else {
+      res
+        .status(statusCode.badRequest)
+        .json({ message: "Cohort name already exists" });
+    }
   } catch (err) {
     failed(res);
   }
