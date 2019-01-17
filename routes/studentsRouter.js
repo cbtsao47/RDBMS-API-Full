@@ -15,9 +15,7 @@ route.get("/", async (req, res) => {
     const result = await db("students");
     res.status(statusCode.ok).json(result);
   } catch (err) {
-    res
-      .status(statusCode.internalErr)
-      .json({ message: "There is something wrong with the server." });
+    failed(res);
   }
 });
 
@@ -25,7 +23,7 @@ route.get("/:id", async (req, res) => {
   const { id } = req.params;
   try {
     const result = await db("students")
-      .join("cohorts", "students.cohort_id", "=", "cohorts.id")
+      .join("cohorts", "students.cohort_id", "cohorts.id")
       .select("students.id", "students.name", { cohort: "cohorts.name" })
       .where({ "students.id": id });
     if (result.length) {
@@ -41,8 +39,11 @@ route.get("/:id", async (req, res) => {
 route.post("/", nameCheck, async (req, res) => {
   const info = req.body;
   try {
-    await db("students").insert(info);
-    res.status(statusCode.created).json({ message: "Student created!" });
+    const result = await db("cohorts").where({ id: info.cohort_id });
+    if (!result.length) {
+      await db("students").insert(info);
+      res.status(statusCode.created).json({ message: "Student created!" });
+    }
   } catch (err) {
     failed(res);
   }
@@ -53,7 +54,6 @@ route.put("/:id", nameCheck, async (req, res) => {
   const change = req.body;
   try {
     const result = await db("students").where({ id });
-    console.log(result);
     if (result.length) {
       await db("students")
         .where({ id })

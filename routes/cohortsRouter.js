@@ -15,9 +15,7 @@ route.get("/", async (req, res) => {
     const result = await db("cohorts");
     res.status(statusCode.ok).json(result);
   } catch (err) {
-    res
-      .status(statusCode.internalErr)
-      .json({ message: "There is something wrong with the server." });
+    failed(res);
   }
 });
 route.get("/:id/students", async (req, res) => {
